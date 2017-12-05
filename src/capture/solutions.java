@@ -1,5 +1,6 @@
 package capture;
 
+import java.awt.Point;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -109,17 +110,87 @@ public class solutions {
 		System.out.println("distance " + distance);
 	}
 
+	public static Point nextCoordinate(Point p, int cur_width) {
+		int max_index = cur_width - 1;
+		if (p.y == max_index) {
+			if (p.x <= max_index) {
+				return new Point(p.x + 1, p.y);
+			}
+		}
+		if (p.x == max_index) {
+			if (p.y > 0) { // right side
+				return new Point(p.x, p.y - 1);
+			}
+		}
+		if (p.y == 0) {
+			if (p.x > 0) { // top side
+				return new Point(p.x - 1, p.y);
+			}
+		}
+		if (p.x == 0) {
+			if (p.y < max_index) {
+				return new Point(p.x, p.y + 1);
+			}
+		}
+		throw new RuntimeException();
+
+	}
+
 	public static void d3_calculateCarryDistance2(int target_number) {
 		List<List<Integer>> rows = new ArrayList<>();
-		int width = 0;
+		rows.add(new ArrayList<>());
+		rows.get(0).add(1);
+		int numberOfValuesSoFar = 0;
+		int cur_width = 0;
 		int number = 1;
-		int row = 0;
-		int col = 0;
-		grow(rows, 1);
+		Point curPos = new Point(-1, -1);
+		while (true) {
+			int required_width = (int) Math.ceil(Math.sqrt(numberOfValuesSoFar + 1));
+			if (required_width % 2 == 0) {
+				required_width++;
+			}
+			if (required_width > cur_width) {
+				grow(rows, required_width);
+				++curPos.x;
+				++curPos.y;
+				cur_width = required_width;
+			}
+			number = getSumOfAdjacents(curPos.x, curPos.y, rows);
+			if (number == 0) {
+				number = 1;
+			}
+			rows.get(curPos.x).set(curPos.y, number);
+			if (number > target_number) {
+				System.out.println(number);
+				break;
+			}
+			++numberOfValuesSoFar;
+
+			curPos = nextCoordinate(curPos, cur_width);
+		}
+	}
+
+	public static int getSumOfAdjacents(int row, int col, List<List<Integer>> rows) {
+		int sum = 0;
+		sum += getValueAt(row - 1, col - 1, rows);
+		sum += getValueAt(row, col - 1, rows);
+		sum += getValueAt(row + 1, col - 1, rows);
+		sum += getValueAt(row - 1, col, rows);
+		sum += getValueAt(row + 1, col, rows);
+		sum += getValueAt(row - 1, col + 1, rows);
+		sum += getValueAt(row, col + 1, rows);
+		sum += getValueAt(row + 1, col + 1, rows);
+		return sum;
 	}
 
 	public static int getValueAt(int row, int col, List<List<Integer>> rows) {
-
+		if (row < rows.size() && row >= 0) {
+			List<Integer> cols = rows.get(row);
+			if (col < cols.size() && col >= 0) {
+				return cols.get(col);
+			}
+		}
+		return 0;
 	}
 
 	public static void grow(List<List<Integer>> rows, int newWidth) {
@@ -129,10 +200,16 @@ public class solutions {
 		}
 		Iterator<List<Integer>> iter = rows.iterator();
 		while (iter.hasNext()) {
-			List<Integer> cols = iter.next();
-			while (cols.size() < newWidth) {
-				cols.add(0, 0);
-				cols.add(cols.size(), 0);
+			List<Integer> col = iter.next();
+			if (col.isEmpty()) {
+				while (col.size() < newWidth) {
+					col.add(0);
+				}
+			} else {
+				while (col.size() < newWidth) {
+					col.add(0, 0);
+					col.add(col.size(), 0);
+				}
 			}
 		}
 	}
