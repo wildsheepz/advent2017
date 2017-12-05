@@ -7,7 +7,6 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -30,9 +29,9 @@ public class solutions {
 		// d3_calculateCarryDistance(289326);
 		// d3_calculateCarryDistance2(289326);
 
-		checkvalid2("a ab abc abd abf abj", new HashMap<>());
-		d4_checkvalid2("d4passphrases");
-		// d5("d5_input");
+		// checkvalid2("a ab abc abd abf abj", new HashMap<>());
+		// d4_checkvalid2("d4passphrases");
+		// d5_part2("d5_input");
 	}
 
 	private static void d5(String s) {
@@ -45,14 +44,49 @@ public class solutions {
 			while ((line = br.readLine()) != null) {
 				l.add(Integer.parseInt(line));
 			}
-			// int[] arr = new int[l.size()];
-			// for (int i = 0; i < l.size(); ++i) {
-			// arr[i] = l.get(i);
-			// }
+			int[] arr = new int[l.size()];
+			for (int i = 0; i < l.size(); ++i) {
+				arr[i] = l.get(i);
+			}
 			int steps = 0;
 			while (pos > -1 && pos < l.size()) {
-				int op = l.get(pos);
-				l.set(pos, op + 1);
+				int op = arr[pos];
+				arr[pos] = op + 1;
+				pos += op;
+				++steps;
+			}
+			System.out.println(steps + " steps");
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+		}
+
+	}
+
+	private static void d5_part2(String s) {
+		BufferedReader br;
+		try {
+			br = new BufferedReader(new FileReader(new File(s)));
+			String line = null;
+			int pos = 0;
+			LinkedList<Integer> l = new LinkedList<>();
+			while ((line = br.readLine()) != null) {
+				l.add(Integer.parseInt(line));
+			}
+			int[] arr = new int[l.size()];
+			for (int i = 0; i < l.size(); ++i) {
+				arr[i] = l.get(i);
+			}
+			int steps = 0;
+			while (pos > -1 && pos < arr.length) {
+				int op = arr[pos];
+				if (op >= 3) {
+					arr[pos] = op - 1;
+				} else {
+					arr[pos] = op + 1;
+				}
 				pos += op;
 				++steps;
 			}
