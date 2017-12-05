@@ -7,6 +7,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -25,12 +26,12 @@ public class solutions {
 		// d2checksum("d2checksum_sample");
 		// d2checksum("d2checksum_input");
 		// d2checksum2("d2checksum_input");
-		d3_calculateCarryDistance(1024);
-		d3_calculateCarryDistance(289326);
-		d3_calculateCarryDistance2(289326);
-		//
-		// d4_checkvalid("d4passphrases");
-		//
+		// d3_calculateCarryDistance(1024);
+		// d3_calculateCarryDistance(289326);
+		// d3_calculateCarryDistance2(289326);
+
+		checkvalid2("a ab abc abd abf abj", new HashMap<>());
+		d4_checkvalid2("d4passphrases");
 		// d5("d5_input");
 	}
 
@@ -65,6 +66,62 @@ public class solutions {
 
 	}
 
+	public static boolean isWordMatch(String s1, String s2) {
+		ArrayList<Character> list = new ArrayList<Character>();
+		for (char c : s1.toCharArray()) {
+			list.add(c);
+		}
+		for (char c : s2.toCharArray()) {
+			if (list.isEmpty()) {
+				return false;
+			}
+			if (list.contains((Object) c)) {
+				list.remove((Object) c);
+			} else {
+				return false;
+			}
+		}
+		return list.isEmpty();
+	}
+
+	private static void d4_checkvalid2(String s) {
+		BufferedReader br;
+		try {
+			br = new BufferedReader(new FileReader(new File(s)));
+			String line = null;
+			int valid = 0;
+			eachLine: while ((line = br.readLine()) != null) {
+				HashMap<String, Void> map = new HashMap<>();
+				if (checkvalid2(line, map)) {
+					valid++;
+				}
+			}
+			System.out.println(valid + " valid passphrases");
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+		}
+	}
+
+	public static boolean checkvalid2(String line, HashMap<String, Void> map) {
+		String[] words = line.split("\\s");
+		for (String word : words) {
+			Iterator<String> iter = map.keySet().iterator();
+			while (iter.hasNext()) {
+				String keyString = iter.next();
+				if (isWordMatch(keyString, word)) {
+					return false;
+				}
+			}
+			map.put(word, null);
+		}
+		return true;
+	}
+
 	private static void d4_checkvalid(String s) {
 		BufferedReader br;
 		try {
@@ -91,7 +148,6 @@ public class solutions {
 			e.printStackTrace();
 		} finally {
 		}
-
 	}
 
 	public static void d3_calculateCarryDistance(int number) {
